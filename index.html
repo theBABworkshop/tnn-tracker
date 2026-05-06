@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TNN Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="card">
+    <div id="reminder-banner" style="display:none">
+      <span id="reminder-banner-text"></span>
+      <button id="reminder-dismiss-btn">Dismiss</button>
+    </div>
+    <h1>TNN Tracker</h1>
+    <input type="text" id="focus-input" placeholder="Enter today's focus">
+    <input type="text" id="note-input" placeholder="Add a note (optional)">
+    <button id="start-btn">Start Tracking</button>
+    <p id="status"></p>
+    <input type="text" id="search-input" placeholder="Search entries...">
+    <div id="filter-controls">
+      <button class="filter-btn active-filter" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="active">Active</button>
+      <button class="filter-btn" data-filter="completed">Completed</button>
+      <button class="filter-btn" data-filter="deleted">Deleted</button>
+    </div>
+    <ul id="entries-list"></ul>
+    <button id="clear-btn">Clear Entries</button>
+    <div id="clear-confirm">
+      <p id="clear-warning">Are you sure? This will clear all entries.</p>
+      <div id="clear-confirm-actions">
+        <button id="clear-yes-btn">Yes, clear all</button>
+        <button id="clear-cancel-btn">Cancel</button>
+      </div>
+    </div>
+    <button id="undo-clear-btn">Undo Clear</button>
+    <button id="export-btn">Export Entries</button>
+
+    <div id="reminder-section">
+      <h2>Reminders</h2>
+      <input type="text" id="reminder-msg-input" placeholder="Reminder message">
+      <input type="time" id="reminder-time-input">
+      <button id="reminder-set-btn">Set Reminder</button>
+      <p id="reminder-current" style="display:none"></p>
+      <button id="reminder-clear-btn" style="display:none">Clear Reminder</button>
+    </div>
+
+    <div id="technique-timer">
+      <h2>Technique Timer</h2>
+      <div id="timer-display">00:00</div>
+      <div id="timer-controls">
+        <button id="timer-toggle">Start</button>
+        <button id="timer-reset">Reset</button>
+      </div>
+    </div>
+
+    <div id="weekly-review">
+      <h2>This Week</h2>
+      <div class="review-stats">
+        <div class="stat-row">
+          <span class="stat-label">Total</span>
+          <span class="stat-count" id="week-total">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Completed</span>
+          <span class="stat-count" id="week-completed">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Active</span>
+          <span class="stat-count" id="week-active">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Deleted</span>
+          <span class="stat-count" id="week-deleted">0</span>
+        </div>
+      </div>
+      <div class="review-chart">
+        <div class="chart-row">
+          <span class="chart-label">Completed</span>
+          <div class="chart-bar-track"><div class="chart-bar bar-completed" id="bar-completed"></div></div>
+        </div>
+        <div class="chart-row">
+          <span class="chart-label">Active</span>
+          <div class="chart-bar-track"><div class="chart-bar bar-active" id="bar-active"></div></div>
+        </div>
+        <div class="chart-row">
+          <span class="chart-label">Deleted</span>
+          <div class="chart-bar-track"><div class="chart-bar bar-deleted" id="bar-deleted"></div></div>
+        </div>
+      </div>
+      <div id="success-signals">
+        <h3>Success Signals</h3>
+        <ul id="signals-list"></ul>
+      </div>
+      <div id="obstacle-review">
+        <h3>Patterns This Week</h3>
+        <ul id="obstacle-list"></ul>
+      </div>
+    </div>
+    <div id="monthly-review">
+      <h2>This Month</h2>
+      <div class="review-stats">
+        <div class="stat-row">
+          <span class="stat-label">Total</span>
+          <span class="stat-count" id="month-total">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Completed</span>
+          <span class="stat-count" id="month-completed">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Active</span>
+          <span class="stat-count" id="month-active">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Deleted</span>
+          <span class="stat-count" id="month-deleted">0</span>
+        </div>
+      </div>
+      <div class="review-chart">
+        <div class="chart-row">
+          <span class="chart-label">Completed</span>
+          <div class="chart-bar-track"><div class="chart-bar bar-completed" id="bar-month-completed"></div></div>
+        </div>
+        <div class="chart-row">
+          <span class="chart-label">Active</span>
+          <div class="chart-bar-track"><div class="chart-bar bar-active" id="bar-month-active"></div></div>
+        </div>
+        <div class="chart-row">
+          <span class="chart-label">Deleted</span>
+          <div class="chart-bar-track"><div class="chart-bar bar-deleted" id="bar-month-deleted"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
