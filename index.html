@@ -134,13 +134,6 @@
     </div>
   </div>
   <script src="script.js"></script>
-  <script>
-    function sendHeight() {
-      window.parent.postMessage({ iframeHeight: document.documentElement.scrollHeight }, '*');
-    }
-    window.addEventListener('load', sendHeight);
-    window.addEventListener('resize', sendHeight);
-    new MutationObserver(sendHeight).observe(document.body, { childList: true, subtree: true });
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.contentWindow.min.js"></script>
 </body>
 </html>
