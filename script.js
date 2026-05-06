@@ -256,7 +256,7 @@ function renderReminderSection() {
   var currentEl = document.getElementById('reminder-current');
   var clearBtn = document.getElementById('reminder-clear-btn');
   if (reminder) {
-    currentEl.textContent = 'Set: "' + reminder.message + '" at ' + reminder.time;
+    currentEl.textContent = 'Set: "' + reminder.message + '" at ' + formatTime12(reminder.time);
     currentEl.style.display = 'block';
     clearBtn.style.display = 'block';
   } else {
@@ -265,19 +265,32 @@ function renderReminderSection() {
   }
 }
 
-function playBeep() {
+function formatTime12(time) {
+  var parts = time.split(':').map(Number);
+  var h = parts[0];
+  var m = parts[1];
+  var ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return h + ':' + String(m).padStart(2, '0') + ' ' + ampm;
+}
+
+function playChime() {
   try {
     var ctx = new (window.AudioContext || window.webkitAudioContext)();
-    var osc = ctx.createOscillator();
-    var gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = 880;
-    osc.type = 'sine';
-    gain.gain.setValueAtTime(0.6, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 1.2);
+    [523, 659, 784].forEach(function (freq, i) {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      var t = ctx.currentTime + i * 0.35;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.7, t + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
+      osc.start(t);
+      osc.stop(t + 1.0);
+    });
   } catch (e) {}
 }
 
@@ -285,7 +298,8 @@ function fireReminder() {
   reminderFired = true;
   document.getElementById('reminder-banner-text').textContent = reminder.message;
   document.getElementById('reminder-banner').style.display = 'flex';
-  playBeep();
+  playChime();
+  window.parent.postMessage({ type: 'tnn-reminder', message: reminder.message }, '*');
 }
 
 function checkReminder() {
