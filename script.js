@@ -265,19 +265,35 @@ function renderReminderSection() {
   }
 }
 
+function playBeep() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.6, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 1.2);
+  } catch (e) {}
+}
+
 function fireReminder() {
   reminderFired = true;
   document.getElementById('reminder-banner-text').textContent = reminder.message;
   document.getElementById('reminder-banner').style.display = 'flex';
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification('TNN Tracker Reminder', { body: reminder.message });
-  }
+  playBeep();
 }
 
 function checkReminder() {
   if (!reminder || reminderFired) return;
-  var now = Date.now();
-  if (now >= reminder.targetMs && now - reminder.targetMs <= 5 * 60 * 1000) {
+  var now = new Date();
+  var hh = String(now.getHours()).padStart(2, '0');
+  var mm = String(now.getMinutes()).padStart(2, '0');
+  if (hh + ':' + mm === reminder.time) {
     fireReminder();
   }
 }
@@ -360,22 +376,13 @@ document.getElementById('reminder-set-btn').addEventListener('click', function (
   var msg = document.getElementById('reminder-msg-input').value.trim();
   var time = document.getElementById('reminder-time-input').value;
   if (msg && time) {
-    var parts = time.split(':').map(Number);
-    var target = new Date();
-    target.setHours(parts[0], parts[1], 0, 0);
-    if (target.getTime() <= Date.now()) {
-      target.setDate(target.getDate() + 1);
-    }
-    reminder = { message: msg, time: time, targetMs: target.getTime() };
+    reminder = { message: msg, time: time };
     reminderFired = false;
     saveReminder();
     renderReminderSection();
     document.getElementById('reminder-msg-input').value = '';
     document.getElementById('reminder-time-input').value = '';
     document.getElementById('reminder-banner').style.display = 'none';
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
   }
 });
 
@@ -422,7 +429,7 @@ applyFilter();
 updateReviews();
 renderReminderSection();
 checkReminder();
-setInterval(checkReminder, 30000);
+setInterval(checkReminder, 10000);
 
 var timerSeconds = 0;
 var timerRunning = false;
