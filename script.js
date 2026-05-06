@@ -265,15 +265,20 @@ function renderReminderSection() {
   }
 }
 
+function fireReminder() {
+  reminderFired = true;
+  document.getElementById('reminder-banner-text').textContent = reminder.message;
+  document.getElementById('reminder-banner').style.display = 'flex';
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('TNN Tracker Reminder', { body: reminder.message });
+  }
+}
+
 function checkReminder() {
   if (!reminder || reminderFired) return;
-  var now = new Date();
-  var hh = String(now.getHours()).padStart(2, '0');
-  var mm = String(now.getMinutes()).padStart(2, '0');
-  if (hh + ':' + mm === reminder.time) {
-    reminderFired = true;
-    document.getElementById('reminder-banner-text').textContent = reminder.message;
-    document.getElementById('reminder-banner').style.display = 'flex';
+  var now = Date.now();
+  if (now >= reminder.targetMs && now - reminder.targetMs <= 5 * 60 * 1000) {
+    fireReminder();
   }
 }
 
@@ -355,13 +360,22 @@ document.getElementById('reminder-set-btn').addEventListener('click', function (
   var msg = document.getElementById('reminder-msg-input').value.trim();
   var time = document.getElementById('reminder-time-input').value;
   if (msg && time) {
-    reminder = { message: msg, time: time };
+    var parts = time.split(':').map(Number);
+    var target = new Date();
+    target.setHours(parts[0], parts[1], 0, 0);
+    if (target.getTime() <= Date.now()) {
+      target.setDate(target.getDate() + 1);
+    }
+    reminder = { message: msg, time: time, targetMs: target.getTime() };
     reminderFired = false;
     saveReminder();
     renderReminderSection();
     document.getElementById('reminder-msg-input').value = '';
     document.getElementById('reminder-time-input').value = '';
     document.getElementById('reminder-banner').style.display = 'none';
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }
 });
 
